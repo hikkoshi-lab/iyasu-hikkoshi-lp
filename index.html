@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>家安公式｜引越し楽すぎて滅！</title>
+<style>
+  :root{
+    --green:#1f9d6b; --green-d:#157a52; --green-l:#e7f6ef;
+    --ink:#1f2a37; --sub:#5b6b7b; --line:#e4e9ef; --bg:#f5f8fa;
+    --money:#e08e0b; --money-bg:#fdf3e1;
+    --effort:#2f7ad1; --effort-bg:#e8f1fb;
+    /* フェーズカラー */
+    --p1:#3b7de0; --p1-d:#2a63bd; --p1-l:#eaf2fd;
+    --p2:#1f9d6b; --p2-d:#157a52; --p2-l:#e7f6ef;
+    --card:#ffffff; --shadow:0 2px 14px rgba(31,42,55,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+    color:var(--ink);background:var(--bg);line-height:1.7;-webkit-font-smoothing:antialiased;
+    overflow-x:hidden;word-break:break-word}
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 80px}
+
+  /* HERO */
+  .hero{background:linear-gradient(135deg,var(--p1) 0%,var(--p1-d) 45%,var(--p2) 100%);color:#fff;
+    padding:30px 16px 30px;text-align:center;overflow:hidden}
+  .hero .brand{font-size:13px;letter-spacing:.18em;opacity:.9;margin-bottom:6px}
+  .hero .illust{max-width:300px;width:78%;margin:6px auto 10px;display:block}
+  .hero h1{font-size:25px;line-height:1.45;font-weight:800}
+  .hero p{font-size:14px;opacity:.95;margin-top:12px}
+  .hero .vals{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+  .hero .val{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);
+    padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:600}
+
+  /* DATE INPUT CARD */
+  .datecard{background:var(--card);border-radius:16px;box-shadow:var(--shadow);
+    margin-top:-22px;position:relative;padding:20px 18px;text-align:center}
+  .datecard h2{font-size:16px;margin-bottom:6px}
+  .datecard .hint{font-size:12.5px;color:var(--sub);margin-bottom:14px}
+  .daterow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  input[type=date]{font-size:16px;padding:11px 14px;border:1.5px solid var(--line);
+    border-radius:10px;color:var(--ink);background:#fff;width:100%;max-width:220px}
+  .btn{background:var(--green);color:#fff;border:none;font-size:15px;font-weight:700;
+    padding:11px 22px;border-radius:10px;cursor:pointer;transition:.15s}
+  .btn:hover{background:var(--green-d)}
+  .btn.ghost{background:#fff;color:var(--sub);border:1.5px solid var(--line);font-weight:600}
+
+  /* DASHBOARD */
+  .dash{display:none;margin-top:16px}
+  .dash.show{display:block}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .kpi{background:var(--card);border-radius:14px;box-shadow:var(--shadow);padding:14px;text-align:center}
+  .kpi .num{font-size:26px;font-weight:800;color:var(--p2-d);line-height:1.1}
+  .kpi .lbl{font-size:12px;color:var(--sub);margin-top:4px}
+  .kpi.limit{border-top:3px solid var(--p1)}
+  .kpi.limit .num{color:var(--p1)}
+  .kpi.full{grid-column:1 / -1}
+
+  .pbar{height:12px;background:#eef2f5;border-radius:999px;overflow:hidden;margin-top:8px}
+  .pbar > i{display:block;height:100%;background:linear-gradient(90deg,#37c089,var(--green));width:0;transition:width .4s}
+  .pct{font-size:13px;color:var(--sub);margin-top:6px}
+
+  .legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin:16px 0 4px;font-size:12.5px;color:var(--sub)}
+  .tag{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:999px;font-size:11.5px;font-weight:700}
+  .tag.m{background:var(--money-bg);color:var(--money)}
+  .tag.e{background:var(--effort-bg);color:var(--effort)}
+
+  /* GROUP HEADER（フェーズ見出し） */
+  .ghead{border-radius:16px;padding:16px 18px;color:#fff;margin-top:26px;display:flex;align-items:center;gap:14px;
+    box-shadow:var(--shadow)}
+  .ghead .gnum{font-size:34px;font-weight:800;opacity:.45;line-height:1}
+  .ghead .glabel{font-size:11px;font-weight:800;letter-spacing:.14em;opacity:.95}
+  .ghead .gtitle{font-size:18px;font-weight:800;margin-top:1px}
+  .ghead .gsub{font-size:12px;opacity:.95;margin-top:2px}
+
+  /* GOAL BANNER（フェーズ完了） */
+  .goal{border-radius:16px;padding:15px 16px;margin-top:14px;text-align:center;font-weight:800;font-size:15px;
+    border:2px dashed}
+
+  /* PHASE CARD */
+  .phase{background:var(--card);border-radius:16px;box-shadow:var(--shadow);margin-top:12px;overflow:hidden;
+    border-left:5px solid var(--accent)}
+  .phead{display:flex;align-items:center;gap:12px;padding:15px 16px;cursor:pointer;border-bottom:1px solid var(--line)}
+  .phead .step{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.05em}
+  .phead h3{font-size:15.5px;font-weight:800}
+  .phead .desc{font-size:12px;color:var(--sub);margin-top:1px}
+  .deadline{margin-left:auto;text-align:right;flex-shrink:0}
+  .deadline .d{font-size:15px;font-weight:800;color:var(--accent);white-space:nowrap}
+  .deadline .left{font-size:11px;color:var(--sub)}
+  .badge-goal{display:inline-block;background:var(--accent);color:#fff;font-size:10.5px;
+    font-weight:800;padding:2px 8px;border-radius:999px;margin-left:6px}
+  .pmini{height:5px;background:#eef2f5}
+  .pmini > i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+  /* STEP内のLINE相談CTA */
+  .linecta{margin:0 16px 14px;background:var(--green-l);border:1.5px solid var(--green);border-radius:12px;
+    padding:13px 14px;text-align:center}
+  .linecta p{font-size:12.5px;color:var(--green-d);font-weight:600;margin-bottom:9px}
+  .linecta a{display:inline-block;background:var(--green);color:#fff;text-decoration:none;font-weight:800;
+    font-size:14px;padding:10px 18px;border-radius:10px}
+  .linecta a:hover{background:var(--green-d)}
+  .linecta a:active{transform:scale(.98)}
+  /* カレンダー登録ボタン */
+  .phasefoot{padding:10px 16px 14px;border-top:1px solid #f1f5f8}
+  .calbtn{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid var(--accent);
+    color:var(--accent);font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:9px;cursor:pointer}
+  .calbtn:active{transform:scale(.97)}
+  .calall-wrap{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:16px;margin-top:14px;text-align:center}
+  .calall-wrap .ttl{font-size:14px;font-weight:800;margin-bottom:4px}
+  .calall-wrap .sub{font-size:12px;color:var(--sub);margin-bottom:12px}
+  .btn.cal{background:#5b34c0}
+  .btn.cal:hover{background:#4a299e}
+
+  .tasks{list-style:none}
+  .tasks li{display:flex;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid #f1f5f8}
+  .tasks li:last-child{border-bottom:none}
+  .tasks input[type=checkbox]{appearance:none;width:21px;height:21px;border:2px solid #cdd6df;
+    border-radius:6px;cursor:pointer;flex-shrink:0;margin-top:2px;position:relative;transition:.15s}
+  .tasks input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent)}
+  .tasks input[type=checkbox]:checked::after{content:"";position:absolute;left:6px;top:2px;
+    width:5px;height:10px;border:solid #fff;border-width:0 2.5px 2.5px 0;transform:rotate(45deg)}
+  .tasks label{flex:1;font-size:14px;cursor:pointer}
+  .tasks .tip{display:block;font-size:12px;color:var(--sub);font-weight:400;margin-top:3px;line-height:1.5}
+  .tasks li.done label{color:#9aa7b2;text-decoration:line-through}
+  .tasks li.done .tip{color:#b9c2cb}
+  .ttags{display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap;justify-content:flex-end;max-width:90px}
+
+  .note{font-size:12px;color:var(--sub);background:var(--green-l);border-radius:8px;
+    padding:8px 11px;margin:0 16px 12px}
+
+  /* CTA */
+  .cta{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:20px 18px;margin-top:16px;text-align:center}
+  .cta h3{font-size:16px;margin-bottom:6px}
+  .cta p{font-size:13px;color:var(--sub);margin-bottom:14px}
+  .cta .btn{display:inline-block;text-decoration:none}
+
+  .toolbar{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+  footer{text-align:center;font-size:11.5px;color:#9aa7b2;margin-top:26px;line-height:1.8}
+
+  @media (max-width:480px){
+    .hero h1{font-size:23px}
+    .datecard{margin-top:-18px;padding:18px 14px}
+    input[type=date]{max-width:none}
+    .daterow .btn{width:100%}
+    .phead{gap:8px}
+    .phead h3{font-size:14.5px}
+    .deadline .d{font-size:14px}
+    .kpi .num{font-size:23px}
+    .ttags{max-width:64px}
+  }
+  @media print{.hero,.datecard .daterow,.toolbar,.cta,.calall-wrap,.phasefoot{display:none}.phase{box-shadow:none;border:1px solid var(--line)}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="brand">家 安 公 式</div>
+  <svg class="illust" viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <!-- 雲 -->
+    <g fill="#ffffff" opacity="0.22">
+      <ellipse cx="70" cy="42" rx="34" ry="15"/><ellipse cx="100" cy="42" rx="26" ry="18"/>
+      <ellipse cx="330" cy="34" rx="30" ry="13"/><ellipse cx="356" cy="34" rx="20" ry="15"/>
+    </g>
+    <!-- 地面 -->
+    <path d="M0 170 Q200 150 400 170 L400 200 L0 200 Z" fill="#ffffff" opacity="0.12"/>
+    <!-- 位置ピン -->
+    <g transform="translate(196 18)">
+      <path d="M0 0 C-20 0 -28 16 -16 34 L0 56 L16 34 C28 16 20 0 0 0 Z" fill="#ff7a59"/>
+      <circle cx="0" cy="22" r="9" fill="#ffffff"/>
+    </g>
+    <!-- 家 -->
+    <g>
+      <rect x="120" y="98" width="120" height="78" rx="4" fill="#fef6ea"/>
+      <polygon points="110,100 180,52 250,100" fill="#ff8a65"/>
+      <polygon points="180,52 250,100 250,90 188,52" fill="#f4663b"/>
+      <rect x="138" y="132" width="34" height="44" rx="3" fill="#ffb74d"/>
+      <circle cx="165" cy="155" r="2.6" fill="#7a4a16"/>
+      <rect x="192" y="118" width="34" height="32" rx="3" fill="#5fc7f5"/>
+      <line x1="209" y1="118" x2="209" y2="150" stroke="#fef6ea" stroke-width="3"/>
+      <line x1="192" y1="134" x2="226" y2="134" stroke="#fef6ea" stroke-width="3"/>
+    </g>
+    <!-- 虫めがね（家を探す） -->
+    <g>
+      <circle cx="288" cy="118" r="40" fill="#ffffff" opacity="0.18"/>
+      <circle cx="288" cy="118" r="40" fill="none" stroke="#ffffff" stroke-width="9"/>
+      <circle cx="288" cy="118" r="40" fill="none" stroke="#2a63bd" stroke-width="4"/>
+      <line x1="318" y1="148" x2="350" y2="182" stroke="#ffffff" stroke-width="15" stroke-linecap="round"/>
+      <line x1="318" y1="148" x2="350" y2="182" stroke="#2a63bd" stroke-width="8" stroke-linecap="round"/>
+      <path d="M275 118 l9 9 16 -18" fill="none" stroke="#1f9d6b" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+  </svg>
+  <h1>引越し楽すぎて滅！</h1>
+  <p>日付を入れるだけ。<br>「いつ・何をするか」が全部わかる。</p>
+  <div class="vals">
+    <span class="val">💰 無駄な出費をなくし最安値で引越し</span>
+    <span class="val">⏱ 抜け漏れストレスなく完了</span>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <div class="datecard">
+    <h2>引越し予定日を入力</h2>
+    <div class="hint">仮の日付でOK。あとから変更できます。</div>
+    <div class="daterow">
+      <input type="date" id="moveDate" />
+      <button class="btn" id="startBtn">ロードマップを作成</button>
+    </div>
+  </div>
+
+  <div class="dash" id="dash">
+    <div class="kpis">
+      <div class="kpi"><div class="num" id="daysToMove">–</div><div class="lbl">引越しまで（日）</div></div>
+      <div class="kpi limit"><div class="num" id="daysToLimit">–</div><div class="lbl">🏁 物件選定の締切まで（日）</div></div>
+      <div class="kpi full">
+        <div class="lbl" style="text-align:left">全体の進捗</div>
+        <div class="pbar"><i id="overallBar"></i></div>
+        <div class="pct" id="overallPct">0% 完了（0 / 0）</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span><b style="color:var(--p1)">●</b> PHASE1 物件選定</span>
+      <span><b style="color:var(--p2)">●</b> PHASE2 引越し</span>
+      <span><span class="tag m">💰</span> 出費が減る</span>
+      <span><span class="tag e">⏱</span> 手間が減る</span>
+    </div>
+
+    <div class="calall-wrap">
+      <div class="ttl">📅 スマホのカレンダーに自動リマインド</div>
+      <div class="sub">全STEPの締切を一括登録。前日と当日に通知が届きます（LINE登録・アプリ不要）</div>
+      <button class="btn cal" id="calAllBtn">全STEPをカレンダーに登録</button>
+    </div>
+
+    <div id="phases"></div>
+
+    <div class="cta">
+      <h3>📩 初期費用の見積もりは「家安」へ</h3>
+      <p>物件の初期費用の見積もりをもらったら、そのまま家安のLINEに送るだけ。<br>「払いすぎ」がないか、削れる項目がないかをチェックします。</p>
+      <a class="btn" href="#" id="lineBtn" target="_blank" rel="noopener">LINEで家安に相談する（無料）</a>
+    </div>
+
+    <div class="toolbar">
+      <button class="btn ghost" id="printBtn">印刷 / PDF保存</button>
+      <button class="btn ghost" id="resetBtn">進捗をリセット</button>
+    </div>
+  </div>
+
+  <footer>
+    ※スケジュールは目安です。物件・地域・契約により前後します。<br>
+    インフラ等のおすすめ銘柄は地域・時期で変わるため最新条件をご確認ください。<br>
+    進捗はこの端末のブラウザに自動保存されます。
+  </footer>
+</div>
+
+<script>
+/* ============ データ：各フェーズと締切（引越し日からの逆算日数 offset） ============ */
+const GROUPS = {
+  1:{ label:'PHASE 1', title:'物件選定フェーズ', sub:'理想の家を最安で見つけて決めるまで',
+      grad:'linear-gradient(135deg,var(--p1),var(--p1-d))',
+      goal:'🏁 PHASE 1 完了｜物件選定 done！ここまで来れば家は決まり' },
+  2:{ label:'PHASE 2', title:'引越し実行フェーズ', sub:'抜け漏れゼロでスムーズに引越しを完了',
+      grad:'linear-gradient(135deg,#27b07a,var(--p2-d))',
+      goal:'🎉 PHASE 2 完了｜引越し done！おつかれさまでした' },
+};
+
+const PHASES = [
+  { id:'p1', group:1, step:'STEP 1', title:'条件を整理する', desc:'予算と条件のブレをなくす', offset:45, tasks:[
+    {id:'t1a', text:'総予算を3本立てで決める（毎月の家賃／初期費用／引越し費用）', m:1, tip:'初期費用は家賃の4〜5ヶ月分が目安'},
+    {id:'t1b', text:'家賃の上限ラインを決める（目安：手取りの30%以内）', m:1, tip:'管理費・駐車場代も込みで計算するのがコツ'},
+    {id:'t1c', text:'エリア候補を3つまでに絞る', tip:'沿線や駅を1つずらすだけで家賃は大きく下がる'},
+    {id:'t1d', text:'間取り・広さ・階数・築年数の希望を決める', tip:'今の家の不満を3つ書き出すと条件が見える'},
+    {id:'t1e', text:'「譲れない条件」と「妥協できる条件」を仕分けする', e:1, tip:'100点満点の物件は無い前提で優先順位を'},
+    {id:'t1f', text:'こだわり設備をリスト化（独立洗面・ペット可・駐車場など）', tip:'後付けできない設備を優先するとミスらない'},
+    {id:'t1g', text:'⚠️現住居の「解約予告期間」を契約書で確認する', e:1, tip:'多くは退去1ヶ月前通知。遅れると家賃が重複する'},
+  ]},
+  { id:'p2', group:1, step:'STEP 2', title:'家を探す・内見・見積もりをもらう', desc:'候補を絞り、見積もりを家安へ', offset:25,
+    note:'内見と同時に「初期費用の見積書」を必ず書面でもらうのがコツ。それを家安に送ればOK。',
+    cta:'見積もりが届いたら、写真を撮って家安に送るだけ。払いすぎを無料でチェックします。', tasks:[
+    {id:'t2a', text:'スーモ・ホームズで検索し、新着通知をONにする', e:1, tip:'両サイト使うと掲載漏れを防げる。良い物件は数日で消える'},
+    {id:'t2b', text:'気になる物件を5〜10件お気に入り保存', tip:'比較対象がないと良し悪しの判断ができない'},
+    {id:'t2c', text:'仲介に連絡して内見を予約（1日でまとめて回る）', e:1, tip:'同じ日に3件回ると記憶が新鮮なまま比較できる'},
+    {id:'t2d', text:'内見チェック（採寸・コンセント・水回り・収納・電波）', tip:'スマホで採寸メモ＆写真を残すと後で迷わない'},
+    {id:'t2e', text:'周辺環境チェック（昼夜・治安・買い物・ハザードマップ）', tip:'夜や雨の日の雰囲気もできれば確認したい'},
+    {id:'t2f', text:'内見時に「初期費用の見積書」を必ずもらう', m:1, tip:'口頭でなく必ず書面で。これが交渉の材料になる'},
+    {id:'t2g', text:'📩 もらった見積もりを家安LINEに送ってチェック依頼', m:1, tip:'送るだけでOK。高いか安いかの判断は家安に任せて'},
+  ]},
+  { id:'p3', group:1, goalStep:true, step:'STEP 3', title:'申し込み・契約（物件決定）', desc:'PHASE1のゴール。住む家を決めきる', offset:21, tasks:[
+    {id:'t3a', text:'入居の申し込みをする', tip:'人気物件は即日埋まる。迷ったら申込は早めに'},
+    {id:'t3b', text:'審査の必要書類を準備（身分証・収入証明・保証）', tip:'源泉徴収票などは事前にスマホで撮っておくと速い'},
+    {id:'t3c', text:'家安チェックで判明した「削れる初期費用」を交渉', m:1, tip:'消臭・抗菌オプションは断れることが多い'},
+    {id:'t3d', text:'重要事項説明・契約書の内容を確認', tip:'退去時の費用負担の条件は必ず読む'},
+    {id:'t3e', text:'火災保険を自分で安いものに選べるか確認', m:1, tip:'指定保険でなくてOKなら半額になることも'},
+    {id:'t3f', text:'鍵の受け取り日を確定', tip:'引越し当日か前日に設定すると家賃の無駄が出ない'},
+    {id:'t3g', text:'🏁 物件を決定する（PHASE1ゴール）', tip:'ここまで来れば一番の難関はクリア。お疲れさま！'},
+  ]},
+  { id:'p4', group:2, step:'STEP 4', title:'引越し業者の相見積もり', desc:'大手3社で最安を確定', offset:14,
+    note:'サカイ・アート・アリさんの3社で比較。「他社さんは◯円でした」が値引きの合言葉。', tasks:[
+    {id:'t4a', text:'サカイ・アート・アリさんの3社に見積もり依頼', m:1, tip:'1社だけだと高いのか安いのか判断できない'},
+    {id:'t4b', text:'一括見積もりで概算→3社に正式依頼', e:1, tip:'電話が一気に来るので連絡可能な時間帯を伝えておく'},
+    {id:'t4c', text:'他社の見積もりを見せて値引き交渉', m:1, tip:'「即決します」をちらつかせると一番下がる'},
+    {id:'t4d', text:'不用品を売る・捨てる・譲るで荷物を減らす', m:1, tip:'メルカリ出品は引越し2週間前までに'},
+    {id:'t4e', text:'業者を決定して予約を確定', tip:'土日・月末・繁忙期は早押さえが鉄則'},
+    {id:'t4f', text:'段ボール・梱包資材を確保', e:1, tip:'スーパーやドラッグストアで無料でもらえる'},
+  ]},
+  { id:'p5', group:2, step:'STEP 5', title:'旧居の解約手続き', desc:'家賃の二重払いを防ぐ', offset:18, tasks:[
+    {id:'t5a', text:'管理会社へ解約連絡（予告期間に注意）', m:1, tip:'電話＋書面やメールで「言った言わない」を防ぐ'},
+    {id:'t5b', text:'退去立ち会いの日を予約', tip:'引越し当日か翌日に設定すると二度手間が無い'},
+    {id:'t5c', text:'敷金返還・原状回復の基礎を確認（過剰請求を防ぐ）', m:1, tip:'経年劣化や通常使用の傷は借主負担ではない'},
+    {id:'t5d', text:'駐車場・駐輪場など付随契約も解約', tip:'駐車場の解約忘れで払い続ける人が多い'},
+  ]},
+  { id:'p6', group:2, step:'STEP 6', title:'電気・ガス・水道・ネット', desc:'入居初日から全部使える状態に', offset:7,
+    note:'ネットは工事待ちがあるので最優先。ガスの開栓は立ち会いが必須なので早めに予約。', tasks:[
+    {id:'t6a', text:'ネット回線を最優先で手配（工事日を確保）', m:1, e:1, tip:'工事は1ヶ月待ちもある。一番最初に動くのが正解'},
+    {id:'t6b', text:'電気の停止・開始（新電力の乗り換えも比較）', m:1, tip:'この機会に見直すと月数百〜千円下がることも'},
+    {id:'t6c', text:'ガスの停止・開栓予約（立ち会い必須）', e:1, tip:'開栓は人の立ち会いが必要。枠が埋まる前に予約'},
+    {id:'t6d', text:'水道の停止・開始（WEB手続き）', tip:'WEBで5分。停止と開始は同時に申し込むと楽'},
+  ]},
+  { id:'p7', group:2, step:'STEP 7', title:'役所・住所変更の手続き', desc:'漏れが一番多いゾーンを全消し', offset:3, tasks:[
+    {id:'t7a', text:'転出届 → 転入届／転居届', tip:'転出はマイナンバーカードでオンライン申請も可'},
+    {id:'t7b', text:'マイナンバー・住民票・印鑑登録', tip:'転入届と同じ日に役所でまとめて済ませると効率的'},
+    {id:'t7c', text:'国民健康保険・年金・各種手当', tip:'会社員は会社経由で手続きできる場合もある'},
+    {id:'t7d', text:'郵便の転送届（1年間無料）', e:1, tip:'ネットで申込可。出し忘れると旧住所に届き続ける'},
+    {id:'t7e', text:'運転免許証の住所変更', tip:'新住所の警察署か免許センターで即日完了'},
+    {id:'t7f', text:'銀行・クレカ・保険・サブスクの住所変更', tip:'各アプリから変更すると窓口に行かず済む'},
+    {id:'t7g', text:'子の転校・転園、ペットの登録変更', tip:'学校・園は決まり次第すぐ連絡するのが安心'},
+  ]},
+  { id:'p8', group:2, step:'STEP 8', title:'荷造り', desc:'計画的に詰めて当日ラクに', offset:1, tasks:[
+    {id:'t8a', text:'使わない部屋・物から順に詰める', e:1, tip:'オフシーズンの服・本・来客用品から始めると楽'},
+    {id:'t8b', text:'箱にラベリング（部屋名＋中身＋開封優先度）', e:1, tip:'新居の部屋名を書くと搬入と荷解きが爆速になる'},
+    {id:'t8c', text:'貴重品・初日に使う物は「当日バッグ」へ', tip:'充電器・着替え・トイレ用品・常備薬を入れておく'},
+    {id:'t8d', text:'冷蔵庫・洗濯機の水抜き', tip:'前日までに済ませないと水漏れの原因になる'},
+    {id:'t8e', text:'旧居の掃除', tip:'敷金返還のためにも軽く掃除しておくと印象が良い'},
+  ]},
+  { id:'p9', group:2, step:'STEP 9', title:'引越し当日', desc:'搬出入をスムーズに', offset:0, tasks:[
+    {id:'t9a', text:'当日の持ち物・現金を準備', tip:'心付けは必須ではない。不要な業者も多い'},
+    {id:'t9b', text:'旧居の搬出・退去立ち会い（傷を確認）', tip:'気になる傷は写真で記録して後のトラブルを防ぐ'},
+    {id:'t9c', text:'新居の搬入・家具配置を指示', tip:'大型家具の置き場所を先に決めておくと一発で済む'},
+    {id:'t9d', text:'ライフラインの開通を確認（電気・ガス・水・ネット）', e:1, tip:'その場で実際に点けて、使えるか必ずチェック'},
+  ]},
+  { id:'p10', group:2, goalStep:true, step:'STEP 10', title:'入居後', desc:'PHASE2のゴール。荷解きと最終手続き', offset:-10, tasks:[
+    {id:'t10a', text:'荷解きは「寝る・食べる・洗う」から', e:1, tip:'まず寝具とトイレ・風呂周りを整えれば初日は安心'},
+    {id:'t10b', text:'近隣・大家へ挨拶', tip:'両隣と上下階へ。手土産は500円前後で十分'},
+    {id:'t10c', text:'新居の傷・不具合を写真で記録', tip:'入居時の傷を残すと退去時の請求トラブルを防げる'},
+    {id:'t10d', text:'住所変更の最終チェック（漏れ潰し）', tip:'抜けがないかこのリストでもう一度見直す'},
+    {id:'t10e', text:'段ボール・不用品の回収を手配', tip:'引越し業者が無料で回収してくれる場合もある'},
+  ]},
+];
+
+const LINE_URL = "https://lin.ee/uvYj9vgO"; /* 家安 公式LINE */
+const KEY_DATE = "kyk_move_date_v1";
+const KEY_DONE = "kyk_done_v1";
+
+/* ============ ユーティリティ ============ */
+const WD = ['日','月','火','水','木','金','土'];
+function addDays(date, days){ const d = new Date(date); d.setDate(d.getDate()+days); return d; }
+function fmt(d){ return `${d.getMonth()+1}月${d.getDate()}日(${WD[d.getDay()]})`; }
+function startOfDay(d){ const x=new Date(d); x.setHours(0,0,0,0); return x; }
+function diffDays(a,b){ return Math.round((startOfDay(a)-startOfDay(b))/86400000); }
+
+let doneSet = new Set(JSON.parse(localStorage.getItem(KEY_DONE) || "[]"));
+let currentMove = null;
+
+/* ============ カレンダー(.ics)生成 ============ */
+function pad(n){ return String(n).padStart(2,'0'); }
+function icsDay(d){ return `${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}`; }
+function escICS(s){ return String(s).replace(/\\/g,'\\\\').replace(/,/g,'\\,').replace(/;/g,'\\;').replace(/\n/g,'\\n'); }
+
+function buildICS(phaseList){
+  if(!currentMove) return '';
+  const stamp = icsDay(new Date()) + 'T000000Z';
+  let L = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//家安//引越しLP//JA','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  phaseList.forEach(ph => {
+    const dl = addDays(currentMove, -ph.offset);
+    const day = icsDay(dl);
+    const summary = `【引越し ${ph.step}】${ph.title}の締切`;
+    const desc = ph.tasks.map(t => '・' + t.text).join('\n');
+    L.push('BEGIN:VEVENT');
+    L.push('UID:' + ph.id + '-' + day + '@iyasu-hikkoshi');
+    L.push('DTSTAMP:' + stamp);
+    L.push('DTSTART:' + day + 'T090000');
+    L.push('DTEND:' + day + 'T093000');
+    L.push('SUMMARY:' + escICS(summary));
+    L.push('DESCRIPTION:' + escICS('この日までにやること:\n' + desc + '\n\n家安 引越しロードマップより'));
+    L.push('BEGIN:VALARM','TRIGGER:-P1D','ACTION:DISPLAY','DESCRIPTION:' + escICS(summary + '（明日まで）'),'END:VALARM');
+    L.push('BEGIN:VALARM','TRIGGER:PT0S','ACTION:DISPLAY','DESCRIPTION:' + escICS(summary + '（本日）'),'END:VALARM');
+    L.push('END:VEVENT');
+  });
+  L.push('END:VCALENDAR');
+  return L.join('\r\n');
+}
+
+function downloadICS(text, filename){
+  const blob = new Blob([text], {type:'text/calendar;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ============ 描画 ============ */
+function render(moveDateStr){
+  const move = new Date(moveDateStr + "T00:00:00");
+  const today = new Date();
+  currentMove = move;
+  localStorage.setItem(KEY_DATE, moveDateStr);
+
+  document.getElementById('dash').classList.add('show');
+
+  // KPI
+  const toMove = Math.max(0, diffDays(move, today));
+  const limitDate = addDays(move, -21);
+  const toLimit = diffDays(limitDate, today);
+  document.getElementById('daysToMove').textContent = toMove;
+  document.getElementById('daysToLimit').textContent = toLimit >= 0 ? toLimit : "超過";
+
+  // フェーズ描画（PHASE見出し→各STEP→ゴールバナー）
+  const host = document.getElementById('phases');
+  let html = "";
+  let curGroup = null;
+  PHASES.forEach((ph, idx) => {
+    const accent = ph.group === 1 ? 'var(--p1)' : 'var(--p2)';
+    const g = GROUPS[ph.group];
+
+    // グループ見出し
+    if(ph.group !== curGroup){
+      html += `
+        <div class="ghead" style="background:${g.grad}">
+          <div class="gnum">${ph.group}</div>
+          <div>
+            <div class="glabel">${g.label}</div>
+            <div class="gtitle">${g.title}</div>
+            <div class="gsub">${g.sub}</div>
+          </div>
+        </div>`;
+      curGroup = ph.group;
+    }
+
+    const dl = addDays(move, -ph.offset);
+    const left = diffDays(dl, today);
+    const leftTxt = ph.offset < 0
+      ? "引越し後"
+      : (left > 0 ? `あと${left}日` : (left === 0 ? "今日まで" : `${-left}日経過`));
+    const deadlineLabel = ph.offset < 0 ? `${fmt(dl)}頃まで` : `${fmt(dl)}まで`;
+    const badge = ph.goalStep ? `<span class="badge-goal">🏁 ${g.label} ゴール</span>` : '';
+
+    html += `
+      <div class="phase" style="--accent:${accent}">
+        <div class="phead">
+          <div>
+            <div class="step">${ph.step}${badge}</div>
+            <h3>${ph.title}</h3>
+            <div class="desc">${ph.desc}</div>
+          </div>
+          <div class="deadline">
+            <div class="d">${deadlineLabel}</div>
+            <div class="left">${leftTxt}</div>
+          </div>
+        </div>
+        <div class="pmini"><i id="mini-${ph.id}"></i></div>
+        <ul class="tasks">
+          ${ph.tasks.map(t => `
+            <li id="li-${t.id}" class="${doneSet.has(t.id)?'done':''}">
+              <input type="checkbox" id="cb-${t.id}" data-task="${t.id}" ${doneSet.has(t.id)?'checked':''}/>
+              <label for="cb-${t.id}">${t.text}${t.tip?`<span class="tip">（${t.tip}）</span>`:''}</label>
+              <span class="ttags">
+                ${t.m?'<span class="tag m">💰</span>':''}
+                ${t.e?'<span class="tag e">⏱</span>':''}
+              </span>
+            </li>`).join('')}
+        </ul>
+        ${ph.note?`<div class="note">💡 ${ph.note}</div>`:''}
+        ${ph.cta?`<div class="linecta"><p>${ph.cta}</p><a href="${LINE_URL}" target="_blank" rel="noopener">💬 LINEで家安に相談する（無料）</a></div>`:''}
+        <div class="phasefoot"><button class="calbtn" data-cal="${ph.id}">📅 このSTEPの締切をカレンダー登録</button></div>
+      </div>`;
+
+    // グループ末尾ならゴールバナー
+    const next = PHASES[idx+1];
+    if(!next || next.group !== ph.group){
+      html += `<div class="goal" style="color:${accent};border-color:${accent};background:${ph.group===1?'var(--p1-l)':'var(--p2-l)'}">${g.goal}</div>`;
+    }
+  });
+  host.innerHTML = html;
+
+  // チェックイベント
+  host.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const id = cb.dataset.task;
+      if(cb.checked) doneSet.add(id); else doneSet.delete(id);
+      document.getElementById('li-'+id).classList.toggle('done', cb.checked);
+      localStorage.setItem(KEY_DONE, JSON.stringify([...doneSet]));
+      updateProgress();
+    });
+  });
+
+  // 各STEPのカレンダー登録
+  host.querySelectorAll('.calbtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ph = PHASES.find(p => p.id === btn.dataset.cal);
+      if(ph) downloadICS(buildICS([ph]), `引越し_${ph.step.replace(/\s/g,'')}.ics`);
+    });
+  });
+
+  updateProgress();
+}
+
+function updateProgress(){
+  let total=0, done=0;
+  PHASES.forEach(ph => {
+    let pt=0, pd=0;
+    ph.tasks.forEach(t => { total++; pt++; if(doneSet.has(t.id)){done++; pd++;} });
+    const mini = document.getElementById('mini-'+ph.id);
+    if(mini) mini.style.width = (pt? (pd/pt*100):0) + '%';
+  });
+  const pct = total? Math.round(done/total*100):0;
+  document.getElementById('overallBar').style.width = pct+'%';
+  document.getElementById('overallPct').textContent = `${pct}% 完了（${done} / ${total}）`;
+}
+
+/* ============ 起動 ============ */
+document.getElementById('startBtn').addEventListener('click', () => {
+  const v = document.getElementById('moveDate').value;
+  if(!v){ alert('引越し予定日を選んでください'); return; }
+  render(v);
+  document.getElementById('dash').scrollIntoView({behavior:'smooth'});
+});
+document.getElementById('resetBtn').addEventListener('click', () => {
+  if(!confirm('チェックした進捗をすべてリセットします。よろしいですか？')) return;
+  doneSet = new Set();
+  localStorage.removeItem(KEY_DONE);
+  render(document.getElementById('moveDate').value);
+});
+document.getElementById('printBtn').addEventListener('click', () => window.print());
+document.getElementById('calAllBtn').addEventListener('click', () => {
+  if(!currentMove){ alert('先に引越し予定日を入力してください'); return; }
+  downloadICS(buildICS(PHASES), '引越しロードマップ_全STEP.ics');
+});
+document.getElementById('lineBtn').setAttribute('href', LINE_URL);
+
+// 保存済みデータの復元
+(function init(){
+  const saved = localStorage.getItem(KEY_DATE);
+  if(saved){ document.getElementById('moveDate').value = saved; render(saved); }
+  else {
+    const d = addDays(new Date(), 60);
+    document.getElementById('moveDate').value =
+      `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+})();
+</script>
+</body>
+</html>
