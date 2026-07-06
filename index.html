@@ -114,6 +114,14 @@
     background:var(--green-l);border-radius:8px;padding:8px 10px}
   .btn.cal{background:#5b34c0}
   .btn.cal:hover{background:#4a299e}
+  .gcal-toggle{display:block;margin:14px auto 0;background:none;border:none;color:#2d7a4f;font-size:12.5px;
+    font-weight:700;text-decoration:underline;cursor:pointer;padding:4px}
+  .gcal-list{display:none;text-align:left;max-width:340px;margin:8px auto 0}
+  .gcal-list.show{display:block}
+  .gcal-list p{font-size:11.5px;color:var(--sub);margin-bottom:8px}
+  .gcal-list a{display:block;font-size:12.5px;font-weight:600;color:#1a6fd4;text-decoration:none;
+    padding:8px 10px;border:1px solid #dbe6f2;border-radius:8px;margin-bottom:6px;background:#f8fbff}
+  .gcal-list a:active{background:#eaf3ff}
 
   .tasks{list-style:none}
   .tasks li{display:flex;align-items:flex-start;gap:11px;padding:12px 16px;border-bottom:1px solid #f1f5f8}
@@ -242,6 +250,8 @@
         <li>「完了」を押す → 登録完了！</li>
       </ol>
       <div class="calhint">💡 反映を確認するときは「引越し日の数週間前」のカレンダーを見てください（締切は先の日付に入ります）</div>
+      <button class="gcal-toggle" id="gcalToggle">📗 Googleカレンダー派の人はこちら（タップで開く）</button>
+      <div class="gcal-list" id="gcalList"></div>
     </div>
 
     <div id="phases"></div>
@@ -434,6 +444,23 @@ function downloadICS(text, filename){
   setTimeout(() => URL.revokeObjectURL(url), 20000);
 }
 
+/* ============ Googleカレンダー登録リンク（.icsが使えない環境向けフォールバック） ============ */
+function gcalURL(ph){
+  const dl = addDays(currentMove, -ph.offset);
+  const day = icsDay(dl);
+  const next = icsDay(addDays(dl, 1));
+  const title = `【引越し ${ph.step}】${ph.title}の締切`;
+  const desc = 'この日までにやること:\n' + ph.tasks.map(t => '・' + t.text).join('\n') + '\n\n家安 引越しロードマップより';
+  const p = new URLSearchParams({action:'TEMPLATE', text:title, dates:`${day}/${next}`, details:desc});
+  return 'https://calendar.google.com/calendar/render?' + p.toString();
+}
+function renderGcalList(){
+  const host = document.getElementById('gcalList');
+  if(!currentMove){ host.innerHTML = ''; return; }
+  host.innerHTML = '<p>Googleカレンダーが開くので「保存」を押すだけ。1件ずつ登録できます（アプリでもブラウザでもOK）</p>'
+    + PHASES.map(ph => `<a href="${gcalURL(ph)}" target="_blank" rel="noopener">📅 ${ph.step}｜${ph.title}（${fmt(addDays(currentMove,-ph.offset))}）</a>`).join('');
+}
+
 /* ============ 描画 ============ */
 function render(moveDateStr){
   const move = new Date(moveDateStr + "T00:00:00");
@@ -537,6 +564,7 @@ function render(moveDateStr){
     });
   });
 
+  renderGcalList();
   updateProgress();
 }
 
@@ -570,6 +598,11 @@ document.getElementById('printBtn').addEventListener('click', () => window.print
 document.getElementById('calAllBtn').addEventListener('click', () => {
   if(!currentMove){ alert('先に引越し予定日を入力してください'); return; }
   downloadICS(buildICS(PHASES), '引越しロードマップ_全STEP.ics');
+});
+document.getElementById('gcalToggle').addEventListener('click', () => {
+  if(!currentMove){ alert('先に引越し予定日を入力してください'); return; }
+  renderGcalList();
+  document.getElementById('gcalList').classList.toggle('show');
 });
 document.getElementById('lineBtn').setAttribute('href', LINE_URL);
 
