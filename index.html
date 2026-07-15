@@ -141,6 +141,12 @@
   .note{font-size:12px;color:var(--sub);background:var(--green-l);border-radius:8px;
     padding:8px 11px;margin:0 16px 12px}
 
+  /* WARNING（払いすぎ注意） */
+  .warn{margin:12px 16px 4px;background:#fff4f1;border:1.5px solid #ff7a59;border-left:5px solid #ff5a36;
+    border-radius:12px;padding:13px 15px;font-size:13px;color:#9c3520;line-height:1.7}
+  .warn .wttl{display:block;font-weight:800;font-size:13.5px;color:#d12f00;margin-bottom:5px}
+  .warn b{color:#d12f00;font-weight:800}
+
   /* CTA */
   .cta{background:var(--card);border-radius:16px;box-shadow:var(--shadow);padding:20px 18px;margin-top:16px;text-align:center}
   .cta h3{font-size:16px;margin-bottom:6px}
@@ -204,10 +210,6 @@
   </svg>
   <h1>引越し楽すぎて滅！</h1>
   <p>日付を入れるだけ。<br>「いつ・何をするか」が全部わかる。</p>
-  <div class="vals">
-    <span class="val">💰 無駄な出費をなくし最安値で引越し</span>
-    <span class="val">⏱ 抜け漏れストレスなく完了</span>
-  </div>
 </div>
 
 <div class="wrap">
@@ -230,13 +232,6 @@
         <div class="pbar"><i id="overallBar"></i></div>
         <div class="pct" id="overallPct">0% 完了（0 / 0）</div>
       </div>
-    </div>
-
-    <div class="legend">
-      <span><b style="color:var(--p1)">●</b> PHASE1 物件選定</span>
-      <span><b style="color:var(--p2)">●</b> PHASE2 引越し</span>
-      <span><span class="tag m">💰</span> 出費が減る</span>
-      <span><span class="tag e">⏱</span> 手間が減る</span>
     </div>
 
     <div class="calall-wrap">
@@ -297,6 +292,7 @@ const PHASES = [
     {id:'t1g', text:'今の家の解約予告を確認', e:1, tip:'契約書で確認。多くは退去1ヶ月前通知。遅れると家賃が重複する'},
   ]},
   { id:'p2', group:1, step:'STEP 2', title:'家を探す・内見・見積もりをもらう', desc:'候補を絞り、見積もりを家安へ', offset:25,
+    warn:'<span class="wttl">⚠️ その場で申し込み・契約は絶対にしないでください</span>気に入っても一度持ち帰り、初期費用の見積書を<b>家安に送ってから</b>判断してください。<b>初期費用の払いすぎ・過剰な請求が最近とても増えています。</b>契約前に必ず家安のチェックを受けてください（無料）。',
     note:'内見と同時に「初期費用の見積書」を必ず書面でもらうのがコツ。それを家安に送ればOK。',
     cta:'見積もりが届いたら、写真を撮って家安に送るだけ。払いすぎを無料でチェックします。', tasks:[
     {id:'t2a', text:'スーモ・ホームズで探す', e:1, tip:'両方使うと掲載漏れを防げる。新着通知ONに。良い物件は数日で消える'},
@@ -521,6 +517,7 @@ function render(moveDateStr){
           </div>
         </div>
         <div class="pmini"><i id="mini-${ph.id}"></i></div>
+        ${ph.warn?`<div class="warn">${ph.warn}</div>`:''}
         <ul class="tasks">
           ${ph.tasks.map(t => `
             <li id="li-${t.id}" class="${doneSet.has(t.id)?'done':''}">
